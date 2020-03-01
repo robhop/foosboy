@@ -13,7 +13,8 @@ namespace backend.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: false),
+                    Avatar = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -26,8 +27,8 @@ namespace backend.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    PlayerAId = table.Column<int>(nullable: true),
-                    PlayerBId = table.Column<int>(nullable: true)
+                    PlayerAId = table.Column<int>(nullable: false),
+                    PlayerBId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -37,13 +38,13 @@ namespace backend.Migrations
                         column: x => x.PlayerAId,
                         principalTable: "Players",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Teams_Players_PlayerBId",
                         column: x => x.PlayerBId,
                         principalTable: "Players",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -53,8 +54,8 @@ namespace backend.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Timestamp = table.Column<DateTime>(nullable: false),
-                    WinnerId = table.Column<int>(nullable: true),
-                    LooserId = table.Column<int>(nullable: true)
+                    WinnerId = table.Column<int>(nullable: false),
+                    LooserId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,13 +65,13 @@ namespace backend.Migrations
                         column: x => x.LooserId,
                         principalTable: "Teams",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Matches_Teams_WinnerId",
                         column: x => x.WinnerId,
                         principalTable: "Teams",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

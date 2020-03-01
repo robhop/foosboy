@@ -34,7 +34,7 @@ namespace backend
 
             services.AddDbContext<FoosBoyContex>(ServiceLifetime.Transient);
             services.AddControllers();
-            
+
             services.AddTransient<PlayerRepository>();
             services.AddTransient<MatchRepository>();
 
@@ -55,8 +55,8 @@ namespace backend
                 app.UseDeveloperExceptionPage();
                 app.UseCors(policy => policy
                     .AllowAnyHeader()
-                    .AllowAnyMethod()                    
-                    .WithOrigins("http://localhost:8081")
+                    .AllowAnyMethod()
+                    .WithOrigins("http://localhost:8080")
                     .AllowCredentials());
             }
             else
@@ -69,7 +69,7 @@ namespace backend
                         System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "../frontend/dist")),
                     RequestPath = ""
                 });
-        
+
             }
 
 

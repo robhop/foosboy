@@ -10,11 +10,16 @@ namespace backend.Types
             descriptor
                 .Field(t => t.Name)
                 .Type<NonNullType<StringType>>();
+
+            descriptor
+                .Field(t => t.Avatar)
+                .Type<StringType>();
         }
     }
 
     public class PlayerInput
     {
         public string Name { get; set; }
+        public string Avatar { get; set; }
     }
 }

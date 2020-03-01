@@ -1,6 +1,7 @@
 { 
     players {
         name
+        avatar
         id
     }
 }

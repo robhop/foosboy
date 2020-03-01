@@ -16,8 +16,8 @@ namespace backend.Resolvers
         }
 
         public Player CreatePlayerAsync([Service] PlayerRepository repository, PlayerInput input)
-        { 
-            return repository.AddPlayer(input.Name);
+        {
+            return repository.AddPlayer(input.Name, input.Avatar);
         }
 
         public int DeletePlayerAsync([Service] PlayerRepository repository, PlayerDelete input)

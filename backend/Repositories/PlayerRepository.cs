@@ -24,12 +24,12 @@ namespace backend.Repositories
                 .SingleAsync(t => t.Id == id);
         }
 
-        public Player AddPlayer(string name)
+        public Player AddPlayer(string name, string avatar)
         {
-            var player = new Player {Name = name};
+            var player = new Player { Name = name, Avatar = avatar };
             var teams = dbContext.Players
-                .Select(p => new Team{PlayerA = p, PlayerB = player}).ToList()
-                .Append(new Team{PlayerA = player, PlayerB = player}).ToList();
+                .Select(p => new Team { PlayerA = p, PlayerB = player }).ToList()
+                .Append(new Team { PlayerA = player, PlayerB = player }).ToList();
             dbContext.Players.Add(player);
             dbContext.Teams.AddRange(teams);
             dbContext.SaveChanges();

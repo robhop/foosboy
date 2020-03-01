@@ -9,7 +9,7 @@ using backend;
 namespace backend.Migrations
 {
     [DbContext(typeof(FoosBoyContex))]
-    [Migration("20200224192047_InitialCreate")]
+    [Migration("20200228223711_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,13 +24,13 @@ namespace backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("LooserId")
+                    b.Property<int>("LooserId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("WinnerId")
+                    b.Property<int>("WinnerId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -48,7 +48,11 @@ namespace backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Avatar")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -62,10 +66,10 @@ namespace backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("PlayerAId")
+                    b.Property<int>("PlayerAId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("PlayerBId")
+                    b.Property<int>("PlayerBId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -81,22 +85,30 @@ namespace backend.Migrations
                 {
                     b.HasOne("backend.Team", "Looser")
                         .WithMany()
-                        .HasForeignKey("LooserId");
+                        .HasForeignKey("LooserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("backend.Team", "Winner")
                         .WithMany()
-                        .HasForeignKey("WinnerId");
+                        .HasForeignKey("WinnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("backend.Team", b =>
                 {
                     b.HasOne("backend.Player", "PlayerA")
                         .WithMany()
-                        .HasForeignKey("PlayerAId");
+                        .HasForeignKey("PlayerAId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("backend.Player", "PlayerB")
                         .WithMany()
-                        .HasForeignKey("PlayerBId");
+                        .HasForeignKey("PlayerBId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

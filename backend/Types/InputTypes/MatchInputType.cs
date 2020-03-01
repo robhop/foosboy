@@ -8,6 +8,10 @@ namespace backend.Types
     {
         protected override void Configure(IInputObjectTypeDescriptor<MatchInput> descriptor)
         {
+            descriptor.Field(t => t.winnerA).Type<NonNullType<IdType>>();
+            descriptor.Field(t => t.winnerB).Type<NonNullType<IdType>>();
+            descriptor.Field(t => t.looserA).Type<NonNullType<IdType>>();
+            descriptor.Field(t => t.looserB).Type<NonNullType<IdType>>();
         }
     }
 
@@ -17,21 +21,25 @@ namespace backend.Types
         public string winnerB { get; set; }
         public string looserA { get; set; }
         public string looserB { get; set; }
-        public int WinnerA() {
-           var value = (new IdSerializer()).Deserialize(winnerA).Value;
-           return (int) value;
+        public int WinnerA()
+        {
+            var value = (new IdSerializer()).Deserialize(winnerA).Value;
+            return (int)value;
         }
-        public int WinnerB() {
-           var value = (new IdSerializer()).Deserialize(winnerB).Value;
-           return (int) value;
+        public int WinnerB()
+        {
+            var value = (new IdSerializer()).Deserialize(winnerB).Value;
+            return (int)value;
         }
-        public int LooserA() {
-           var value = (new IdSerializer()).Deserialize(looserA).Value;
-           return (int) value;
+        public int LooserA()
+        {
+            var value = (new IdSerializer()).Deserialize(looserA).Value;
+            return (int)value;
         }
-        public int LooserB() {
-           var value = (new IdSerializer()).Deserialize(looserB).Value;
-           return (int) value;
+        public int LooserB()
+        {
+            var value = (new IdSerializer()).Deserialize(looserB).Value;
+            return (int)value;
         }
     }
 }
