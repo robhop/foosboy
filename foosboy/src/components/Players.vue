@@ -10,21 +10,32 @@
 
         <!-- Result -->
         <div v-else-if="data" class="result apollo">
-          <v-list>
-            <v-list-item v-for="player in data.players" v-bind:key="player.id">
-              <v-list-item-avatar>
-                <!-- <v-img :src="player.avatar"></v-img> -->
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title v-text="player.name"></v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content>
-                <v-btn v-on:click="showAddPlayerDialog">Add Player</v-btn>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
+          <v-card max-width="400">
+            <v-list>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-btn @click="showAddPlayerDialog">Add Player</v-btn>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item v-for="player in data.players" v-bind:key="player.id">
+                <v-list-item-icon color="indigo">
+                  <v-avatar color="indigo">
+                    <v-img v-if="player.avatar" :src="player.avatar"></v-img>
+                    <span v-else class="white--text headline">{{player.name[0] + player.name[1]}}</span>
+                  </v-avatar>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title v-text="player.name"></v-list-item-title>
+                  <v-list-item-subtitle v-text="player.name"></v-list-item-subtitle>
+                </v-list-item-content>
+                <v-list-item-icon>
+                  <v-btn icon @click="deletePlayer(player.id)">
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
+                </v-list-item-icon>
+              </v-list-item>
+            </v-list>
+          </v-card>
         </div>
 
         <!-- No result -->
@@ -51,8 +62,8 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="dialog = false">Close</v-btn>
-            <v-btn color="blue darken-1" text @click="savePlayer">Save</v-btn>
+            <v-btn color="blue darken-1" text @click.stop="dialog = false">Close</v-btn>
+            <v-btn color="blue darken-1" text @click.stop="savePlayer">Save</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -61,8 +72,7 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import gql from "graphql-tag";
-
+// import gql from "graphql-tag";
 export default Vue.extend({
   data: () => {
     return {
@@ -81,20 +91,12 @@ export default Vue.extend({
       this.name = "";
       const avatar = this.avatar;
       this.avatar = "";
+      const query = require("../graphql/Players.gql");
+      const mutation = require("../graphql/CreatePlayer.gql");
 
       this.$apollo
         .mutate({
-          // Query
-          mutation: gql`
-            mutation createPlayer($input: PlayerInput!) {
-              createPlayer(input: $input) {
-                id
-                name
-                avatar
-              }
-            }
-          `,
-          // Parameters
+          mutation: mutation,
           variables: {
             input: {
               name: name,
@@ -103,35 +105,53 @@ export default Vue.extend({
           },
           update: (store, { data: { createPlayer } }) => {
             const data = store.readQuery({
-              query: require("../graphql/Players.gql")
+              query: query
             });
             data.players.push(createPlayer);
             store.writeQuery({
-              query: require("../graphql/Players.gql"),
+              query: query,
               data
             });
           }
-          // Optimistic UI
-          // Will be treated as a 'fake' result as soon as the request is made
-          // so that the UI can react quickly and the user be happy
-          // optimisticResponse: {
-          //   __typename: "Mutation",
-          //   addTag: {
-          //     __typename: "Tag",
-          //     id: -1,
-          //     label: newTag
-          //   }
-          // }
         })
         .then(data => {
-          // Result
           console.log(data);
         })
         .catch(error => {
-          // Error
           console.error(error);
-          // We restore the initial user input
-          // this.newTag = newTag;
+        });
+    },
+    deletePlayer(id) {
+      const query = require("../graphql/Players.gql");
+      const mutation = require("../graphql/DeletePlayer.gql");
+
+      this.$apollo
+        .mutate({
+          mutation: mutation,
+          variables: {
+            input: {
+              id: id
+            }
+          },
+          update: store => {
+            const data = store.readQuery({
+              query: query
+            });
+            const index = data.players.findIndex(m => m.id === id);
+            if (index !== -1) {
+              data.players.splice(index, 1);
+              store.writeQuery({
+                query: query,
+                data
+              });
+            }
+          }
+        })
+        .then(data => {
+          console.log(data);
+        })
+        .catch(error => {
+          console.error(error);
         });
     }
   }
