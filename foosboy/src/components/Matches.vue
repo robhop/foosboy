@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ApolloQuery :query="require('../graphql/Players.gql')">
+    <ApolloQuery :query="require('../graphql/Matches.gql')">
       <template v-slot="{ result: { loading, error, data } }">
         <!-- Loading -->
         <div v-if="loading" class="loading apollo">Loading...</div>
@@ -14,22 +14,22 @@
             <v-list>
               <v-list-item>
                 <v-list-item-content>
-                  <v-btn @click="showAddPlayerDialog">Add Player</v-btn>
+                  <v-btn @click="showAddMatchDialog">Add Match</v-btn>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item v-for="player in data.players" v-bind:key="player.id">
+              <v-list-item v-for="match in data.matches" v-bind:key="match.id">
                 <v-list-item-icon color="indigo">
                   <v-avatar color="indigo">
-                    <v-img v-if="player.avatar" :src="player.avatar"></v-img>
-                    <span v-else class="white--text headline">{{player.name[0] + player.name[1]}}</span>
+                    <v-img v-if="match.avatar" :src="match.avatar"></v-img>
+                    <span v-else class="white--text headline">{{match.name[0] + match.name[1]}}</span>
                   </v-avatar>
                 </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title v-text="player.name"></v-list-item-title>
-                  <v-list-item-subtitle v-text="player.name"></v-list-item-subtitle>
+                  <v-list-item-title v-text="match.name"></v-list-item-title>
+                  <v-list-item-subtitle v-text="match.name"></v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-icon>
-                  <v-btn icon @click="deletePlayer(player.id)">
+                  <v-btn icon @click="deleteMatch(match.id)">
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
                 </v-list-item-icon>
@@ -46,7 +46,7 @@
       <v-dialog v-model="dialog" persistent max-width="600px">
         <v-card>
           <v-card-title>
-            <span class="headline">Player</span>
+            <span class="headline">Match</span>
           </v-card-title>
           <v-card-text>
             <v-container>
@@ -55,7 +55,7 @@
                   <v-text-field v-model="name" label="Name" required></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
-                  <v-text-field v-model="avatar" label="Avatar" hint="url to players avatar"></v-text-field>
+                  <v-text-field v-model="avatar" label="Avatar" hint="url to matches avatar"></v-text-field>
                 </v-col>
               </v-row>
             </v-container>
@@ -63,7 +63,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1" text @click.stop="dialog = false">Close</v-btn>
-            <v-btn color="blue darken-1" text @click.stop="savePlayer">Save</v-btn>
+            <v-btn color="blue darken-1" text @click.stop="saveMatch">Save</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -82,17 +82,17 @@ export default Vue.extend({
     };
   },
   methods: {
-    showAddPlayerDialog() {
+    showAddMatchDialog() {
       this.dialog = true;
     },
-    savePlayer() {
+    saveMatch() {
       this.dialog = false;
       const name = this.name;
       this.name = "";
       const avatar = this.avatar;
       this.avatar = "";
-      const query = require("../graphql/Players.gql");
-      const mutation = require("../graphql/CreatePlayer.gql");
+      const query = require("../graphql/Matches.gql");
+      const mutation = require("../graphql/CreateMatch.gql");
 
       this.$apollo
         .mutate({
@@ -103,11 +103,11 @@ export default Vue.extend({
               avatar: avatar
             }
           },
-          update: (store, { data: { createPlayer } }) => {
+          update: (store, { data: { createMatch } }) => {
             const data = store.readQuery({
               query: query
             });
-            data.players.push(createPlayer);
+            data.matches.push(createMatch);
             store.writeQuery({
               query: query,
               data
@@ -121,9 +121,9 @@ export default Vue.extend({
           console.error(error);
         });
     },
-    deletePlayer(id) {
-      const query = require("../graphql/Players.gql");
-      const mutation = require("../graphql/DeletePlayer.gql");
+    deleteMatch(id) {
+      const query = require("../graphql/Matches.gql");
+      const mutation = require("../graphql/DeleteMatch.gql");
 
       this.$apollo
         .mutate({
@@ -137,9 +137,9 @@ export default Vue.extend({
             const data = store.readQuery({
               query: query
             });
-            const index = data.players.findIndex(m => m.id === id);
+            const index = data.matches.findIndex(m => m.id === id);
             if (index !== -1) {
-              data.players.splice(index, 1);
+              data.matches.splice(index, 1);
               store.writeQuery({
                 query: query,
                 data

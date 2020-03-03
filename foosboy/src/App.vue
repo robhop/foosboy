@@ -30,19 +30,30 @@
     </v-app-bar>
 
     <v-content>
-      <Players/>
+      <v-container fluid>
+        <v-row>
+          <v-col cols="6">
+            <Players />
+          </v-col>
+          <v-col cols="6">
+            <Matches />
+          </v-col>
+        </v-row>
+      </v-container>
     </v-content>
   </v-app>
 </template>
 
 <script>
 import Players from "./components/Players";
+import Matches from "./components/Matches";
 
 export default {
   name: "App",
 
   components: {
-    Players
+    Players,
+    Matches
   },
 
   data: () => ({

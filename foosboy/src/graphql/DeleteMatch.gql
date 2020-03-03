@@ -1,0 +1,3 @@
+mutation deleteMatch($input: MatchDeleteInput!) {
+  deleteMatch(input: $input) 
+}
