@@ -18,14 +18,8 @@
                 </v-list-item-content>
               </v-list-item>
               <v-list-item v-for="match in data.matches" v-bind:key="match.id">
-                <v-list-item-icon color="indigo">
-                  <v-avatar color="indigo">
-                    <v-img v-if="match.avatar" :src="match.avatar"></v-img>
-                    <span v-else class="white--text headline">{{match.name[0] + match.name[1]}}</span>
-                  </v-avatar>
-                </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title v-text="match.name"></v-list-item-title>
+                  <v-list-item-title v-text="match.id"></v-list-item-title>
                   <v-list-item-subtitle v-text="match.name"></v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-icon>
@@ -44,32 +38,63 @@
     </ApolloQuery>
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent max-width="600px">
-        <ApolloQuery :query="require('../graphql/Players.gql')">
-          <template v-slot="{ result: { loading, error, data } }">
-            <!-- Loading -->
-            <div v-if="loading" class="loading apollo">Loading...</div>
-
-            <!-- Error -->
-            <div v-else-if="error" class="error apollo">An error occurred</div>
-
-            <!-- Result -->
-            <div v-else-if="data" class="result apollo">DEtte er data</div>
-          </template>
-        </ApolloQuery>
         <v-card>
           <v-card-title>
             <span class="headline">Match</span>
           </v-card-title>
           <v-card-text>
             <v-container>
-              <v-row>
-                <v-col cols="12" sm="6" md="4">
-                  <v-text-field v-model="name" label="Name" required></v-text-field>
-                </v-col>
-                <v-col cols="12" sm="6" md="4">
-                  <v-text-field v-model="avatar" label="Avatar" hint="url to matches avatar"></v-text-field>
-                </v-col>
-              </v-row>
+              <ApolloQuery :query="require('../graphql/Players.gql')">
+                <template v-slot="{ result: { loading, error, data } }">
+                  <div v-if="data" class="result apollo">
+                    <v-row>
+                      <v-col cols="12" md="6">
+                        <v-select
+                          v-model="winner.player1"
+                          :items="data.players"
+                          item-text="name"
+                          item-value="id"
+                          label="Winner - Player 1"
+                        ></v-select>
+                      </v-col>
+                      <v-col cols="12" md="6">
+                        <v-select
+                          v-model="looser.player1"
+                          :items="data.players"
+                          item-text="name"
+                          item-value="id"
+                          label="Looser - Player 1"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <v-col cols="12" md="12">
+                        <p class="text-center">vs</p>
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <v-col cols="12" md="6">
+                        <v-select
+                          v-model="winner.player2"
+                          :items="data.players"
+                          item-text="name"
+                          item-value="id"
+                          label="Winner - Player 2"
+                        ></v-select>
+                      </v-col>
+                      <v-col cols="12" md="6">
+                        <v-select
+                          v-model="looser.player2"
+                          :items="data.players"
+                          item-text="name"
+                          item-value="id"
+                          label="Looser - Player 2"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                  </div>
+                </template>
+              </ApolloQuery>
             </v-container>
           </v-card-text>
           <v-card-actions>
@@ -89,8 +114,8 @@ export default Vue.extend({
   data: () => {
     return {
       dialog: false,
-      name: "",
-      avatar: ""
+      winner: { player1: null, palyer2: null },
+      looser: { player1: null, palyer2: null }
     };
   },
   methods: {
@@ -98,11 +123,11 @@ export default Vue.extend({
       this.dialog = true;
     },
     saveMatch() {
+      const winnerA = this.winner.player1;
+      const winnerB = this.winner.player2;
+      const looserA = this.looser.player1;
+      const looserB = this.looser.player2;
       this.dialog = false;
-      const name = this.name;
-      this.name = "";
-      const avatar = this.avatar;
-      this.avatar = "";
       const query = require("../graphql/Matches.gql");
       const mutation = require("../graphql/CreateMatch.gql");
 
@@ -111,8 +136,10 @@ export default Vue.extend({
           mutation: mutation,
           variables: {
             input: {
-              name: name,
-              avatar: avatar
+              winnerA: winnerA,
+              winnerB: winnerB,
+              looserA: looserA,
+              looserB: looserB
             }
           },
           update: (store, { data: { createMatch } }) => {
