@@ -18,16 +18,8 @@
                 </v-list-item-content>
               </v-list-item>
               <v-list-item v-for="player in data.players" v-bind:key="player.id">
-                <v-list-item-icon color="indigo">
-                  <v-avatar color="indigo">
-                    <v-img v-if="player.avatar" :src="player.avatar"></v-img>
-                    <span v-else class="white--text headline">{{player.name[0] + player.name[1]}}</span>
-                  </v-avatar>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title v-text="player.name"></v-list-item-title>
-                  <v-list-item-subtitle v-text="player.name"></v-list-item-subtitle>
-                </v-list-item-content>
+                <PlayerListItemIcon :player="player" />
+                <PlayerListItemContent :player="player" />
                 <v-list-item-icon>
                   <v-btn icon @click="deletePlayer(player.id)">
                     <v-icon>mdi-delete</v-icon>
@@ -72,8 +64,13 @@
 </template>
 <script lang="javascript">
 import Vue from "vue";
-// import gql from "graphql-tag";
+import PlayerListItemIcon from "./PlayerListItemIcon";
+import PlayerListItemContent from "./PlayerListItemContent";
 export default Vue.extend({
+  components: {
+    PlayerListItemIcon,
+    PlayerListItemContent
+  },
   data: () => {
     return {
       dialog: false,

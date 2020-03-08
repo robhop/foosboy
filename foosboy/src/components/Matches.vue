@@ -11,16 +11,48 @@
         <!-- Result -->
         <div v-else-if="data" class="result apollo">
           <v-card>
-            <v-list>
+            <v-data-table :headers="headers" :items="data.matches" :items-per-page="10">
+              <template v-slot:top>
+                <v-toolbar flat color="white">
+                  <v-spacer></v-spacer>
+                  <v-btn @click="showAddMatchDialog">Add Match</v-btn>
+                </v-toolbar>
+              </template>
+              <template v-slot:item.winner="{ item }">
+                <v-avatar color="indigo" size="32px">
+                  <v-img v-if="item.winner.playerA.avatar" :src="item.winner.playerA.avatar"></v-img>
+                  <span v-else class="white--text">{{shortName(item.winner.playerA)}}</span>
+                </v-avatar> &nbsp;
+                <v-avatar color="indigo" size="32px">
+                  <v-img v-if="item.winner.playerB.avatar" :src="item.winner.playerB.avatar"></v-img>
+                  <span v-else class="white--text">{{shortName(item.winner.playerB)}}</span>
+                </v-avatar>
+              </template>
+              <template v-slot:item.looser="{ item }">
+                <v-avatar color="indigo" size="32px">
+                  <v-img v-if="item.looser.playerA.avatar" :src="item.looser.playerA.avatar"></v-img>
+                  <span v-else class="white--text">{{shortName(item.winner.playerA)}}</span>
+                </v-avatar>&nbsp; 
+                <v-avatar color="indigo" size="32px">
+                  <v-img v-if="item.looser.playerB.avatar" :src="item.looser.playerB.avatar"></v-img>
+                  <span v-else class="white--text">{{shortName(item.looser.playerB)}}</span>
+                </v-avatar>
+              </template>
+              <template v-slot:item.timestamp="{ item }">{{ item.timestamp | shortDateTime }}</template>
+            </v-data-table>
+            <!-- <v-list>
               <v-list-item>
                 <v-list-item-content>
                   <v-btn @click="showAddMatchDialog">Add Match</v-btn>
                 </v-list-item-content>
               </v-list-item>
               <v-list-item v-for="match in data.matches" v-bind:key="match.id">
+                <TeamListItem :team="match.winner" />
+                 <span> vs </span> 
+                <TeamListItem :team="match.looser" />
                 <v-list-item-content>
-                  <v-list-item-title v-text="match.id"></v-list-item-title>
-                  <v-list-item-subtitle v-text="match.name"></v-list-item-subtitle>
+                  <v-list-item-title></v-list-item-title>
+                  <v-list-item-subtitle>{{ match.timestamp | shortDateTime}}</v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-icon>
                   <v-btn icon @click="deleteMatch(match.id)">
@@ -28,7 +60,7 @@
                   </v-btn>
                 </v-list-item-icon>
               </v-list-item>
-            </v-list>
+            </v-list>-->
           </v-card>
         </div>
 
@@ -109,16 +141,33 @@
 </template>
 <script lang="javascript">
 import Vue from "vue";
-// import gql from "graphql-tag";
+// import TeamListItem from "./TeamListItem"
 export default Vue.extend({
+  components: {
+    // TeamListItem
+  },
   data: () => {
     return {
       dialog: false,
       winner: { player1: null, palyer2: null },
-      looser: { player1: null, palyer2: null }
+      looser: { player1: null, palyer2: null },
+      headers: [
+        { text: "Time", value: "timestamp" },
+        { text: "Winners", value: "winner", sortable: false },
+        { text: "Loosers", value: "looser", sortable: false }
+      ]
     };
   },
   methods: {
+    shortName: function(player) {
+      const parts = player.name.split(" ", 2);
+      if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+      else
+        return parts
+          .map(p => p.substring(0, 1))
+          .join("")
+          .toUpperCase();
+    },
     showAddMatchDialog() {
       this.dialog = true;
     },

@@ -32,10 +32,10 @@
     <v-content>
       <v-container fluid>
         <v-row>
-          <v-col cols="6">
+          <v-col cols="3">
             <Players />
           </v-col>
-          <v-col cols="6">
+          <v-col cols="9">
             <Matches />
           </v-col>
         </v-row>

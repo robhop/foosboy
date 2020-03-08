@@ -7,19 +7,20 @@ namespace backend.Repositories
 {
     public class MatchRepository : BaseRepository
     {
+        private IQueryable<Match> q;
+
         public MatchRepository(FoosBoyContex contex) : base(contex)
         {
-        }
-
-        public Task<Match> GetMatchByIdAsync(int id)
-        {
-            // return dbContext.Matches.SingleAsync(m => m.Id == id);
-            var q = dbContext.Matches.AsQueryable();
+            q = dbContext.Matches.AsQueryable();
             q = q.Include(m => m.Winner).ThenInclude(t => t.PlayerA);
             q = q.Include(m => m.Winner).ThenInclude(t => t.PlayerB);
             q = q.Include(m => m.Looser).ThenInclude(t => t.PlayerB);
             q = q.Include(m => m.Looser).ThenInclude(t => t.PlayerB);
-            return q.Where(m => m.Id == id).SingleAsync();
+        }
+
+        public Task<Match> GetMatchByIdAsync(int id)
+        {
+            return q.SingleAsync(m => m.Id == id);
         }
 
         public int DeleteMatch(int id)
@@ -30,29 +31,25 @@ namespace backend.Repositories
         }
         public Match CreateMatch(int winnerA, int winnerB, int looserA, int looserB)
         {
-            var winner = dbContext.Teams.
-                Single(t => ((t.PlayerA.Id == winnerA || t.PlayerA.Id == winnerB) && (t.PlayerB.Id == winnerA || t.PlayerB.Id == winnerB)));
-            var looser = dbContext.Teams.
-                Single(t => ((t.PlayerA.Id == looserA || t.PlayerA.Id == looserB) && (t.PlayerB.Id == looserA || t.PlayerB.Id == looserB)));
 
-            var match = new Match { Winner = winner, Looser = looser, Timestamp = DateTime.UtcNow };
+            var winners = new int[] {winnerA, winnerB};
+            var loosers = new int[] {looserA, looserB};
+        
+            var winner = dbContext.Teams.
+                SingleAsync(t => t.PlayerA.Id == winners.Min() && t.PlayerB.Id == winners.Max());
+
+            var looser = dbContext.Teams.
+                SingleAsync(t => t.PlayerA.Id == loosers.Min() && t.PlayerB.Id == loosers.Max());
+
+            var match = new Match { Winner = winner.Result, Looser = looser.Result, Timestamp = DateTime.UtcNow };
+
             dbContext.Matches.Add(match);
             dbContext.SaveChanges();
-            var q = dbContext.Matches.Where(m => m.Id == match.Id);
-            q = q.Include(m => m.Winner).ThenInclude(t => t.PlayerA);
-            q = q.Include(m => m.Winner).ThenInclude(t => t.PlayerB);
-            q = q.Include(m => m.Looser).ThenInclude(t => t.PlayerB);
-            q = q.Include(m => m.Looser).ThenInclude(t => t.PlayerB);
-            return q.Single();
+            return  q.Single(m => m.Id == match.Id);
         }
         public IQueryable<Match> GetMatches()
         {
-            var q = dbContext.Matches.AsQueryable();
-            q = q.Include(m => m.Winner).ThenInclude(t => t.PlayerA);
-            q = q.Include(m => m.Winner).ThenInclude(t => t.PlayerB);
-            q = q.Include(m => m.Looser).ThenInclude(t => t.PlayerB);
-            q = q.Include(m => m.Looser).ThenInclude(t => t.PlayerB);
-            return q.AsQueryable();
+            return q.OrderByDescending(m => m.Timestamp);
         }
     }
 }
