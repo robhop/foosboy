@@ -32,11 +32,12 @@ namespace backend
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddDbContext<FoosBoyContex>(ServiceLifetime.Transient);
+            services.AddDbContext<Models.FoosBoyContex>(ServiceLifetime.Transient);
             services.AddControllers();
 
             services.AddTransient<PlayerRepository>();
             services.AddTransient<MatchRepository>();
+            services.AddDataLoaderRegistry();
 
             services.AddCors();
             services.AddGraphQL(sp => SchemaBuilder.New()

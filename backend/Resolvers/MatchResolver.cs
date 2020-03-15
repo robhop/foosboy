@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using backend.Models;
 using backend.Repositories;
 using backend.Types;
 using HotChocolate;
@@ -34,14 +35,25 @@ namespace backend.Resolvers
                 return MatchEnum.SINGLE;
         }
 
-        public IEnumerable<Player> GetWinners(IResolverContext ctx)
+        public Task<Player[]> GetPlayers(IResolverContext ctx, [Service] PlayerRepository repository)
         {
-            return ctx.Parent<Match>().Plays.Where(p => p.Result == Result.WIN).Select(p => p.Player);
+            var id = ctx.Parent<Match>().Id;
+
+            return ctx.GroupDataLoader<int, Player>(nameof(repository.GetPlayersByMatch), repository.GetPlayersByMatch)
+                 .LoadAsync(id, new System.Threading.CancellationToken());
+
+        }
+        public Task<Player[]> GetWinners(IResolverContext ctx, [Service] PlayerRepository repository)
+        {
+            return GetPlayers(ctx, repository)
+                .ContinueWith(a => a.Result.Where(p => p.Result == Result.WIN).ToArray());
         }
 
-        public IEnumerable<Player> GetLoosers(IResolverContext ctx)
+        public Task<Player[]> GetLoosers(IResolverContext ctx, [Service] PlayerRepository repository)
         {
-            return ctx.Parent<Match>().Plays.Where(p => p.Result == Result.LOOSE).Select(p => p.Player);
+            return GetPlayers(ctx, repository)
+                .ContinueWith(a => a.Result.Where(p => p.Result == Result.LOOSE).ToArray());
         }
+
     }
 }

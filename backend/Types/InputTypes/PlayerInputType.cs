@@ -7,6 +7,7 @@ namespace backend.Types
     {
         protected override void Configure(IInputObjectTypeDescriptor<PlayerInput> descriptor)
         {
+
             descriptor
                 .Field(t => t.Name)
                 .Type<NonNullType<StringType>>();

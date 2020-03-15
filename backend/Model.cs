@@ -2,9 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace backend
+namespace backend.Models
 {
     public class FoosBoyContex : DbContext
     {
@@ -28,6 +29,11 @@ namespace backend
 
         public string Avatar { get; set; }
 
+        public List<Play> Plays { get; set; }
+
+        [NotMapped]
+        public Result Result { get; set; }
+
     }
 
 
@@ -40,7 +46,9 @@ namespace backend
     {
         public int Id { get; set; }
         public Player Player { get; set; }
+        public int PlayerId { get; set; }
         public Match Match { get; set; }
+        public int MatchId { get; set; }
         public Result Result { get; set; }
     }
 
@@ -48,8 +56,12 @@ namespace backend
     {
         public int Id { get; set; }
         [Required]
+
         public DateTime Timestamp { get; set; }
 
         public List<Play> Plays { get; set; }
+
+        [NotMapped]
+        public Result Result { get; set; }
     }
 }

@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using backend.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Repositories
@@ -36,6 +38,24 @@ namespace backend.Repositories
         {
             return dbContext.Players.SingleAsync(p => p.Id == id);
         }
+        public Task<ILookup<int, Player>> GetPlayersByMatch(IReadOnlyList<int> keys)
+        {
+            return Task<ILookup<int, Player>>.Factory.StartNew(() =>
+            {
+                var data = (from p in dbContext.Players
+                            join pl in dbContext.Plays on p.Id equals pl.PlayerId
+                            where keys.Contains(pl.MatchId)
+                            select new { player = p, MatchId = pl.MatchId, result = pl.Result })
+                        .AsNoTracking();
+                return data.ToLookup(
+                    item => item.MatchId,
+                    item =>
+                    {
+                        item.player.Result = item.result;
+                        return item.player;
+                    });
+            });
 
+        }
     }
 }

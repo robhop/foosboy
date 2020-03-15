@@ -1,4 +1,5 @@
 using System;
+using backend.Models;
 
 namespace backend.Repositories
 {
@@ -7,7 +8,7 @@ namespace backend.Repositories
         protected readonly FoosBoyContex dbContext;
         public BaseRepository(FoosBoyContex contex)
         {
-            this.dbContext =  contex;
+            this.dbContext = contex;
         }
 
         #region IDisposable Support
