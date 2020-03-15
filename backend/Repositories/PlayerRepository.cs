@@ -16,22 +16,11 @@ namespace backend.Repositories
             return dbContext.Players;
         }
 
-        public Task<Team> GetTeamByIdAsync(int id)
-        {
-            return dbContext.Teams
-                .Include(t => t.PlayerA)
-                .Include(t => t.PlayerB)
-                .SingleAsync(t => t.Id == id);
-        }
 
         public Player AddPlayer(string name, string avatar)
         {
             var player = new Player { Name = name, Avatar = avatar };
-            var teams = dbContext.Players
-                .Select(p => new Team { PlayerA = p, PlayerB = player }).ToList()
-                .Append(new Team { PlayerA = player, PlayerB = player }).ToList();
             dbContext.Players.Add(player);
-            dbContext.Teams.AddRange(teams);
             dbContext.SaveChanges();
             return player;
         }
@@ -39,9 +28,6 @@ namespace backend.Repositories
         public int DeletePlayer(int id)
         {
             var player = dbContext.Players.Single(p => p.Id == id);
-            var temas = dbContext.Teams.Where(t => t.PlayerA == player || t.PlayerB == player).ToList();
-
-            dbContext.RemoveRange(temas);
             dbContext.Remove(player);
             return dbContext.SaveChanges();
         }
@@ -51,9 +37,5 @@ namespace backend.Repositories
             return dbContext.Players.SingleAsync(p => p.Id == id);
         }
 
-        public IQueryable<Team> GetTeams()
-        {
-            return dbContext.Teams.Include(t => t.PlayerA).Include(t => t.PlayerB);
-        }
     }
 }

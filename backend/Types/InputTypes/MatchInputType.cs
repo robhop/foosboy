@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using HotChocolate.Types;
 using HotChocolate.Types.Relay;
 
@@ -8,38 +10,24 @@ namespace backend.Types
     {
         protected override void Configure(IInputObjectTypeDescriptor<MatchInput> descriptor)
         {
-            descriptor.Field(t => t.winnerA).Type<NonNullType<IdType>>();
-            descriptor.Field(t => t.winnerB).Type<NonNullType<IdType>>();
-            descriptor.Field(t => t.looserA).Type<NonNullType<IdType>>();
-            descriptor.Field(t => t.looserB).Type<NonNullType<IdType>>();
+            descriptor.Field(t => t.winners).Type<ListType<NonNullType<IdType>>>();
+            descriptor.Field(t => t.loosers).Type<ListType<NonNullType<IdType>>>();
         }
     }
 
     public class MatchInput
     {
-        public string winnerA { get; set; }
-        public string winnerB { get; set; }
-        public string looserA { get; set; }
-        public string looserB { get; set; }
-        public int WinnerA()
+        public List<string> winners { get; set; }
+        public List<string> loosers { get; set; }
+        public IEnumerable<int> Winners()
         {
-            var value = (new IdSerializer()).Deserialize(winnerA).Value;
-            return (int)value;
+            IdSerializer id = new IdSerializer();
+            return winners.Select(w => (int)id.Deserialize(w).Value);
         }
-        public int WinnerB()
+        public IEnumerable<int> Loosers()
         {
-            var value = (new IdSerializer()).Deserialize(winnerB).Value;
-            return (int)value;
-        }
-        public int LooserA()
-        {
-            var value = (new IdSerializer()).Deserialize(looserA).Value;
-            return (int)value;
-        }
-        public int LooserB()
-        {
-            var value = (new IdSerializer()).Deserialize(looserB).Value;
-            return (int)value;
+            IdSerializer id = new IdSerializer();
+            return loosers.Select(w => (int)id.Deserialize(w).Value);
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using backend.Repositories;
@@ -17,7 +18,7 @@ namespace backend.Resolvers
 
         public Match CreateMatch([Service] MatchRepository repository, MatchInput input)
         {
-            return repository.CreateMatch(input.WinnerA(), input.WinnerB(), input.LooserA(), input.LooserB());
+            return repository.CreateMatch(input.Winners(), input.Loosers());
         }
 
         public int DeleteMatchAsync([Service] MatchRepository repository, MatchDelete input)
@@ -27,12 +28,20 @@ namespace backend.Resolvers
 
         public MatchEnum GetType(IResolverContext ctx)
         {
-            var a = ctx.Parent<Match>().Winner.PlayerA;
-            var b = ctx.Parent<Match>().Winner.PlayerB;
-            if (a == b || b == null)
-                return MatchEnum.SINGLE;
-            else
+            if (ctx.Parent<Match>().Plays.Count > 2)
                 return MatchEnum.DOUBLE;
+            else
+                return MatchEnum.SINGLE;
+        }
+
+        public IEnumerable<Player> GetWinners(IResolverContext ctx)
+        {
+            return ctx.Parent<Match>().Plays.Where(p => p.Result == Result.WIN).Select(p => p.Player);
+        }
+
+        public IEnumerable<Player> GetLoosers(IResolverContext ctx)
+        {
+            return ctx.Parent<Match>().Plays.Where(p => p.Result == Result.LOOSE).Select(p => p.Player);
         }
     }
 }

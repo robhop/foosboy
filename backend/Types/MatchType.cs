@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using backend.Repositories;
 using backend.Resolvers;
 using HotChocolate;
@@ -22,32 +23,11 @@ namespace backend.Types
 
             descriptor.Field<MatchResolver>(r => r.GetType(null));
 
-            descriptor.Field("winners")
-                .Type<NonNullType<ListType<NonNullType<PlayerType>>>>()
-                .Resolver(ctx =>
-                {
-                    var a = ctx.Parent<Match>().Winner.PlayerA;
-                    var b = ctx.Parent<Match>().Winner.PlayerB;
-                    if (a == b || b == null)
-                        return new List<Player> { a };
-                    else
-                        return new List<Player> { a, b };
-                });
+            descriptor.Field<MatchResolver>(r => r.GetWinners(null))
+                .Type<NonNullType<ListType<NonNullType<PlayerType>>>>();
 
-            descriptor.Field("loosers")
-                .Type<NonNullType<ListType<NonNullType<PlayerType>>>>()
-                .Resolver(ctx =>
-                {
-                    var a = ctx.Parent<Match>().Looser.PlayerA;
-                    var b = ctx.Parent<Match>().Looser.PlayerB;
-                    if (a == b || b == null)
-                        return new List<Player> { a };
-                    else
-                        return new List<Player> { a, b };
-                });
-
-
-
+            descriptor.Field<MatchResolver>(r => r.GetLoosers(null))
+                .Type<NonNullType<ListType<NonNullType<PlayerType>>>>();
 
 
         }

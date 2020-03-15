@@ -12,7 +12,7 @@ namespace backend
         // { }
 
         public DbSet<Player> Players { get; set; }
-        public DbSet<Team> Teams { get; set; }
+        public DbSet<Play> Plays { get; set; }
         public DbSet<Match> Matches { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
@@ -27,17 +27,21 @@ namespace backend
         public string Name { get; set; }
 
         public string Avatar { get; set; }
+
     }
 
-    public class Team
+
+    public enum Result
+    {
+        LOOSE = 0,
+        WIN = 1
+    }
+    public class Play
     {
         public int Id { get; set; }
-
-        [Required]
-        public Player PlayerA { get; set; }
-
-        [Required]
-        public Player PlayerB { get; set; }
+        public Player Player { get; set; }
+        public Match Match { get; set; }
+        public Result Result { get; set; }
     }
 
     public class Match
@@ -45,9 +49,7 @@ namespace backend
         public int Id { get; set; }
         [Required]
         public DateTime Timestamp { get; set; }
-        [Required]
-        public Team Winner { get; set; }
-        [Required]
-        public Team Looser { get; set; }
+
+        public List<Play> Plays { get; set; }
     }
 }
