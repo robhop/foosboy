@@ -24,5 +24,15 @@ namespace backend.Resolvers
         {
             return repository.DeleteMatch(input.GetId());
         }
+
+        public MatchEnum GetType(IResolverContext ctx)
+        {
+            var a = ctx.Parent<Match>().Winner.PlayerA;
+            var b = ctx.Parent<Match>().Winner.PlayerB;
+            if (a == b || b == null)
+                return MatchEnum.SINGLE;
+            else
+                return MatchEnum.DOUBLE;
+        }
     }
 }

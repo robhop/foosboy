@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HotChocolate" Version="11.0.0-preview.96" />
-    <PackageReference Include="HotChocolate.AspNetCore" Version="11.0.0-preview.96" />
-    <PackageReference Include="HotChocolate.AspNetCore.Playground" Version="11.0.0-preview.96" />
+    <PackageReference Include="HotChocolate" Version="11.0.0-preview.112" />
+    <PackageReference Include="HotChocolate.AspNetCore" Version="11.0.0-preview.112" />
+    <PackageReference Include="HotChocolate.AspNetCore.Playground" Version="11.0.0-preview.112" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

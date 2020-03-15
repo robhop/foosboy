@@ -3,28 +3,24 @@ using HotChocolate.Types;
 
 namespace backend.Types
 {
-
     public class QueryType : ObjectType
     {
         protected override void Configure(IObjectTypeDescriptor descriptor)
         {
             descriptor.Name("Query");
 
-            descriptor
+            descriptor.Field<PlayerResolver>(t => t.GetPlayers(default, default))
                 .Name("players")
-                .Field<PlayerResolver>(t => t.GetPlayers(default, default))
                 .Type<NonNullType<ListType<NonNullType<PlayerType>>>>();
-            
-            descriptor
+
+            descriptor.Field<TeamResolver>(t => t.GetTeams(default, default))
                 .Name("teams")
-                .Field<TeamResolver>(t => t.GetTeams(default, default))
                 .Type<NonNullType<ListType<NonNullType<TeamType>>>>();
 
-            descriptor
+            descriptor.Field<MatchResolver>(t => t.GetMatches(default, default))
                 .Name("matches")
-                .Field<MatchResolver>(t => t.GetMatches(default, default))
                 .Type<NonNullType<ListType<NonNullType<MatchType>>>>();
-        
+
         }
     }
 }

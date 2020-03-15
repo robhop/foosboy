@@ -4,7 +4,7 @@ using HotChocolate.Types;
 
 namespace backend.Types
 {
-    public class MutationType :ObjectType
+    public class MutationType : ObjectType
     {
         protected override void Configure(IObjectTypeDescriptor descriptor)
         {
@@ -25,7 +25,7 @@ namespace backend.Types
                 .Name("deleteMatch")
                 .Type<NonNullType<IntType>>()
                 .Argument("input", a => a.Type<NonNullType<MatchDeleteType>>());
-            
+
             descriptor.Field<MatchResolver>(r => r.CreateMatch(null, null))
                 .Name("createMatch")
                 .Type<NonNullType<MatchType>>()
