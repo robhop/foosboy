@@ -37,6 +37,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import store from "./store";
 import Players from "./components/Players.vue";
 export default Vue.extend({
   name: "App",
@@ -47,6 +48,10 @@ export default Vue.extend({
 
   data: () => ({
     //
-  })
+  }),
+
+  mounted() {
+    this.$store.dispatch("getPlayers");
+  }
 });
 </script>

@@ -1,36 +1,30 @@
 <template>
   <div>
     Players
-    <ApolloQuery :query="require('../graphql/Players.gql')">
-      <template v-slot="{ result: { loading, error, data } }">
-        <div v-if="loading" class="loading apollo">Loading...</div>
-
-        <div v-else-if="error" class="error apollo">An error occurred</div>
-
-        <div v-else-if="data" class="result apollo">
-          <v-list>
-            <v-list-item v-for="player in data.players" v-bind:key="player.id">
-              <v-list-item-avatar>
-                <v-img
-                  :src="'https://avatars0.githubusercontent.com/u/6553283?s=400&u=aece239ee1ee7e7e078ee3018380ba979019a79c&v=4'"
-                ></v-img>
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title v-text="player.name"></v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </div>
-
-        <div v-else class="no-result apollo">No result :(</div>
-      </template>
-    </ApolloQuery>
+    <v-list>
+      <v-list-item v-for="player in allPlayers" v-bind:key="player.id">
+        <v-list-item-avatar>
+          <v-img
+            :src="'https://avatars0.githubusercontent.com/u/6553283?s=400&u=aece239ee1ee7e7e078ee3018380ba979019a79c&v=4'"
+          ></v-img>
+        </v-list-item-avatar>
+        <v-list-item-content>
+          <v-list-item-title v-text="player.name"></v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+    </v-list>
   </div>
 </template>
 
 
 
 <script lang="ts">
+import { mapGetters } from "vuex";
+import { createProvider } from "../vue-apollo";
 import Vue from "vue";
-export default Vue.extend({});
+export default Vue.extend({
+  computed: {
+    ...mapGetters(["allPlayers"])
+  }
+});
 </script>

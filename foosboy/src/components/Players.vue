@@ -78,6 +78,10 @@ export default Vue.extend({
       avatar: ""
     };
   },
+  mounted() {
+    console.log("Mounted");
+    this.$store.dispatch("getPlayers");
+  },
   methods: {
     showAddPlayerDialog() {
       this.dialog = true;

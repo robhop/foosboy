@@ -1,6 +1,11 @@
 { 
-    players {
-        name
-        id
+  players {
+    name
+    id
+    playerStats {
+      gameCount
+      gameWinCount
+      gameLooseCount
     }
+  }
 }
